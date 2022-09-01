@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'myPage.dart';
+import 'myBottomNavigationBar.dart';
 
-class myPageEdit extends StatefulWidget {
-  const myPageEdit({Key? key}) : super(key: key);
+class MyPageEdit extends StatefulWidget {
+  const MyPageEdit({Key? key}) : super(key: key);
 
   @override
-  State<myPageEdit> createState() => _myPageEditState();
+  State<MyPageEdit> createState() => _MyPageEditState();
 }
 
-class _myPageEditState extends State<myPageEdit> {
+class _MyPageEditState extends State<MyPageEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,9 +18,14 @@ class _myPageEditState extends State<myPageEdit> {
           children: [
             const SizedBox(height: 50),
             Container(
-              color: Colors.yellow,
-              height: MediaQuery.of(context).size.height/5,
-              width: MediaQuery.of(context).size.width/3,
+              height: MediaQuery.of(context).size.height < MediaQuery.of(context).size.width?
+              MediaQuery.of(context).size.height/3:MediaQuery.of(context).size.height/5,
+              width: MediaQuery.of(context).size.height < MediaQuery.of(context).size.width?
+              MediaQuery.of(context).size.width/4:MediaQuery.of(context).size.width/3,
+              decoration: BoxDecoration(
+                color: Colors.yellow,
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
             SizedBox(height: 50),
             Container(
@@ -45,7 +50,7 @@ class _myPageEditState extends State<myPageEdit> {
             ),
             SizedBox(height: 50,),
             ElevatedButton(
-              onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return myPage();})),
+              onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return MyBottomNavigationBar(selectedIndex: 3,);})),
               child: Text('登録',style: TextStyle(fontSize: 30),))
           ],
         )

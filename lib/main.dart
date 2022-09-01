@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:oshiten_app/search.dart';
+import 'package:oshiten_app/firebase_options.dart';
+import 'searchDetail.dart';
 import 'package:provider/provider.dart';
 import 'logIn.dart';
 import 'userRegister.dart';
 import 'search.dart';
+import 'oshimatiDetail.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'myBottomNavigationBar.dart';
+import 'home.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => SearchProvider()),
-          ChangeNotifierProvider(create: (_) => SearchProvider()),
+          ChangeNotifierProvider(create: (_) => BestOshiten()),
+          ChangeNotifierProvider(create: (_) => currentPicIndex()),
         ],
         child: const MyApp(),
     ),
@@ -27,51 +39,54 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(title: 'oshiten',),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key,required this.title}) : super(key: key);
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  bool _isSignedIn = false;
+  String userId = '';
+
+  void checkSignInState(){
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if(user == null) {
+        setState(() {
+          _isSignedIn = false;
+        });
+      } else {
+        setState(() {
+          userId = user.uid;
+          _isSignedIn = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkSignInState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(top: 150, bottom: 10),
-              child: const Text('Oshiten',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60, fontStyle: FontStyle.italic),
-              ),
-            ),
-            Container(
-              child: const Text('~レストラン紹介アプリ~', style: TextStyle(fontSize: 30)),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 120),
-              // decoration: BoxDecoration(border: Border.all(),borderRadius: BorderRadius.circular(15)),
-              child: TextButton(
-                onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return logIn();})),
-                child: const Text('ログイン', style: TextStyle(fontSize: 25),),
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
-                ),
-              ),
-            ),
-            Container(
-                margin: const EdgeInsets.only(top: 70),
-                child: TextButton(
-                  onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return userRegister();})),
-                  child: const Text('ユーザー登録はこちらから',
-                      style: TextStyle(fontSize: 20,decoration: TextDecoration.underline)),
-                )
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text(widget.title),
+        automaticallyImplyLeading: false,
       ),
+      body: _isSignedIn?MyBottomNavigationBar(selectedIndex: 3):Home(),
     );
   }
 }

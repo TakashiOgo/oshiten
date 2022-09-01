@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "581873853607",
+    "project_id": "oshiten-app",
+    "storage_bucket": "oshiten-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581873853607:android:23bbfafaaaa8285ab0e782",
+        "android_client_info": {
+          "package_name": "com.example.oshiten_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581873853607-pcaabrtb0cj206dvvv4cn70ccnmvvbib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJUSYG3SIVhjiMBa0rD4P2RdOuvfatUHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581873853607-pcaabrtb0cj206dvvv4cn70ccnmvvbib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

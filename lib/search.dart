@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:oshiten_app/myBottomNavigationBar.dart';
+import 'oshimati.dart';
+import 'searchResults.dart';
 import 'package:provider/provider.dart';
+import 'main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SearchProvider extends ChangeNotifier {
 
@@ -26,26 +32,39 @@ class SearchProvider extends ChangeNotifier {
   static final maxPriceLists = <String>[
     "上限なし","¥1,000","¥2,000","¥3,000","¥4,000","¥5,000","¥6,000","¥8,000","¥10,000","¥15,000","¥20,000"
   ];
-  var _value = "";
 
   bool teenAgeChecked = false;
   bool twentiesChecked = false;
   bool thirtiesChecked = false;
   bool fortiesChecked = false;
-  bool overFiftiesChecked = false;
+  bool fiftiesChecked = false;
+  bool overSixtiesChecked = false;
   bool friendChecked = false;
   bool familyChecked = false;
-  bool datingChecked = false;
   bool companyChecked = false;
   bool memorialDinnerChecked = false;
+  bool datingChecked = false;
   bool prettyChecked = false;
   bool luxuryChecked = false;
   bool retroChecked = false;
   bool publicChecked = false;
   bool parkingChecked = false;
   bool noParkingChecked = true;
-  bool _parkingChecked = false;
+  bool parkingCheckedGroup = false;
 
+  String parking = "駐車場: 有";
+
+  List<String> ageLists = [];
+  List<String> sceneLists = [];
+  List<String> atmosphereLists = [];
+
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+
+  void sortAgeLists() {
+    ageLists.sort();
+    notifyListeners();
+  }
 
   void changePrefecture(String? value){
     selectedPrefectureValue = value!;
@@ -67,123 +86,208 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeMaxMinPrice(String? value){
-    _value = value!;
-    selectedMaxPriceValue = selectedMinPriceValue;
-    selectedMinPriceValue = _value;
-  }
-
   void changeTeenAge(bool? value){
     teenAgeChecked = value!;
+    ageLists.contains("10代")? ageLists.remove("10代"): ageLists.add("10代");
     notifyListeners();
   }
 
   void changeTwenties(bool? value){
     twentiesChecked = value!;
+    ageLists.contains("20代")? ageLists.remove("20代"): ageLists.add("20代");
     notifyListeners();
   }
 
   void changeThirties(bool? value){
     thirtiesChecked = value!;
+    ageLists.contains("30代")? ageLists.remove("30代"): ageLists.add("30代");
     notifyListeners();
   }
 
   void changeForties(bool? value){
     fortiesChecked = value!;
+    ageLists.contains("40代")? ageLists.remove("40代"): ageLists.add("40代");
     notifyListeners();
   }
 
-  void changeOverFifties(bool? value){
-    overFiftiesChecked = value!;
+  void changeFifties(bool? value){
+    fiftiesChecked = value!;
+    ageLists.contains("50代")? ageLists.remove("50代"): ageLists.add("50代");
+    notifyListeners();
+  }
+
+  void changeOverSixties(bool? value){
+    overSixtiesChecked = value!;
+    ageLists.contains("60代")? ageLists.remove("60代"): ageLists.add("60代");
     notifyListeners();
   }
 
   void changeFriend(bool? value){
     friendChecked = value!;
+    sceneLists.contains("友人")? sceneLists.remove("友人"): sceneLists.add("友人");
     notifyListeners();
   }
 
   void changeFamily(bool? value){
     familyChecked = value!;
-    notifyListeners();
-  }
-
-  void changeDating(bool? value){
-    datingChecked = value!;
+    sceneLists.contains("家族")? sceneLists.remove("家族"): sceneLists.add("家族");
     notifyListeners();
   }
 
   void changeCompany(bool? value){
     companyChecked = value!;
+    sceneLists.contains("会社")? sceneLists.remove("会社"): sceneLists.add("会社");
     notifyListeners();
   }
 
   void changeMemorialDinner(bool? value){
     memorialDinnerChecked = value!;
+    sceneLists.contains("会食")? sceneLists.remove("会食"): sceneLists.add("会食");
+    notifyListeners();
+  }
+
+  void changeDating(bool? value){
+    datingChecked = value!;
+    sceneLists.contains("デート")? sceneLists.remove("デート"): sceneLists.add("デート");
     notifyListeners();
   }
 
   void changePretty(bool? value){
     prettyChecked = value!;
+    atmosphereLists.contains("キレイめ")? atmosphereLists.remove("キレイめ"): atmosphereLists.add("キレイめ");
     notifyListeners();
   }
 
   void changeLuxury(bool? value){
     luxuryChecked = value!;
+    atmosphereLists.contains("高級")? atmosphereLists.remove("高級"): atmosphereLists.add("高級");
     notifyListeners();
   }
 
   void changeRetro(bool? value){
     retroChecked = value!;
+    atmosphereLists.contains("レトロ")? atmosphereLists.remove("レトロ"): atmosphereLists.add("レトロ");
     notifyListeners();
   }
 
   void changePublic(bool? value){
     publicChecked = value!;
+    atmosphereLists.contains("大衆")? atmosphereLists.remove("大衆"): atmosphereLists.add("大衆");
     notifyListeners();
   }
 
-  void changeParking(bool? value){
-    _parkingChecked = value!;
+  void changeParking(bool? value) {
+    parkingCheckedGroup = value!;
+    parking = "駐車場: 無";
     notifyListeners();
+  }
+
+  void addConditions() async{
+    await FirebaseFirestore.instance.collection('conditions').add({
+      'prefecture': selectedPrefectureValue,
+      'genre': selectedGenreValue,
+      'minPrice': selectedMinPriceValue,
+      'maxPrice': selectedMaxPriceValue,
+      'age': ageLists,
+      'scene': sceneLists,
+      'atmosphere': atmosphereLists,
+      'date': DateTime.now().toString(),
+      'user_id': uid
+    });
   }
 
 }
 
-class search extends StatelessWidget {
-  const search({Key? key}) : super(key: key);
+class Search extends StatelessWidget {
+  Search({Key? key}) : super(key: key);
 
-
+  bool _isDisabled = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('検索'),automaticallyImplyLeading: false,),
+      appBar: AppBar(
+        title: Text('検索'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if(FirebaseAuth.instance.currentUser == null){
+                print('ログアウト');
+              }
+              Navigator.of(context).push(MaterialPageRoute(builder: (context){return MyHomePage(title: 'oshiten');}));
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Container(
           margin: const EdgeInsets.all(20),
           alignment: Alignment.center,
           child: Column(
             children: [
-              Container(
-                alignment: Alignment.topRight,
-                // child: ElevatedButton(
-                //   onPressed: onPressed,
-                //   child: const Text('検索',style: TextStyle(fontSize: 25),)
-                // )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    alignment: Alignment.topRight,
+                    child: Consumer<SearchProvider>(
+                      builder: (context, search, child) {
+                        search.ageLists.isNotEmpty &&
+                        search.sceneLists.isNotEmpty &&
+                        search.atmosphereLists.isNotEmpty ? _isDisabled = true: _isDisabled = false;
+                        return ElevatedButton(
+                          onPressed: _isDisabled ? () {
+                            search.addConditions();
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                              return MyBottomNavigationBar(selectedIndex: 1);
+                            }));
+                          } : null,
+                          child: const Text('新しく登録する', style: TextStyle(fontSize: 15),)
+                        );
+                      }
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topRight,
+                    child: Consumer<SearchProvider>(
+                      builder: (context, search, child) {
+                        return ElevatedButton(
+                            onPressed: (){
+                              search.sortAgeLists();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context){
+                                  return SearchResults(
+                                    // prefectureValue: search.selectedPrefectureValue,
+                                    // GenreValue: search.selectedGenreValue,
+                                    // MinPriceValue: search.selectedMinPriceValue,
+                                    // MaxPriceValue: search.selectedMaxPriceValue,
+                                    // selectedAge: search.ageLists.toString(),
+                                    // selectedScene: search.sceneLists.toString(),
+                                    // selectedAtmosphere: search.atmosphereLists.toString(),
+                                    // parking: search.parking,
+                                  );
+                                })
+                             );
+                            }
+                                ,
+                            child: const Text('検索',style: TextStyle(fontSize: 15),)
+                        );
+                      }
+                    ),
+                  ),
+                ],
               ),
               Container(
-                width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      // width: MediaQuery.of(context).size.width/3,
                       child: Text('エリア'),
                     ),
                     Container(
-                        // width: MediaQuery.of(context).size.width/3,
-                        // alignment: Alignment.centerRight,
                         child: Consumer<SearchProvider>(
                           builder: (context, search, child) {
                             return DropdownButton<String>(
@@ -201,17 +305,13 @@ class search extends StatelessWidget {
                 ),
               ),
               Container(
-                width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      // width: MediaQuery.of(context).size.width/3,
                       child: Text('ジャンル'),
                     ),
                     Container(
-                        // width: MediaQuery.of(context).size.width/3,
-                        // alignment: Alignment.centerRight,
                         child: Consumer<SearchProvider>(
                           builder: (context, search, child) {
                             return DropdownButton<String>(
@@ -230,7 +330,6 @@ class search extends StatelessWidget {
               ),
               SizedBox(height: 10,),
               Container(
-                width: double.infinity,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueGrey),
@@ -242,7 +341,6 @@ class search extends StatelessWidget {
                       child: Text('価格'),
                     ),
                     Container(
-                      width: double.infinity,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -275,9 +373,7 @@ class search extends StatelessWidget {
                                   items: SearchProvider.maxPriceLists.map((String list)=>
                                       DropdownMenuItem(value: list,child: Text(list))).toList(),
                                   onChanged: (String? value){
-                                    SearchProvider.maxPriceLists.indexOf(value!) <
-                                        SearchProvider.minPriceLists.indexOf(search.selectedMinPriceValue)?
-                                    search.changeMaxMinPrice(value):search.changeMaxPrice(value);
+                                    search.changeMaxPrice(value);
                                   },
                                 );
                               },
@@ -362,14 +458,28 @@ class search extends StatelessWidget {
                             ),
                           ),
                           Container(
+                            width: 130,
+                            child: Consumer<SearchProvider>(
+                                builder: (context, search, child){
+                                  return CheckboxListTile(
+                                      title: Text('50代'),
+                                      value: search.fiftiesChecked,
+                                      onChanged: (bool? value) {
+                                        search.changeFifties(value);
+                                      }
+                                  );
+                                }
+                            ),
+                          ),
+                          Container(
                             width: 160,
                             child: Consumer<SearchProvider>(
                                 builder: (context, search, child){
                                   return CheckboxListTile(
-                                      title: Text('50代以上'),
-                                      value: search.overFiftiesChecked,
+                                      title: Text('60代以上'),
+                                      value: search.overSixtiesChecked,
                                       onChanged: (bool? value) {
-                                        search.changeOverFifties(value);
+                                        search.changeOverSixties(value);
                                       }
                                   );
                                 }
@@ -553,7 +663,6 @@ class search extends StatelessWidget {
               ),
               SizedBox(height: 10,),
             Container(
-                width: double.infinity,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueGrey),
@@ -574,7 +683,7 @@ class search extends StatelessWidget {
                               return RadioListTile(
                                   title: Text('有'),
                                   value: search.parkingChecked,
-                                  groupValue: search._parkingChecked,
+                                  groupValue: search.parkingCheckedGroup,
                                   onChanged: (bool? value) {
                                     search.changeParking(value);
                                   }
@@ -589,7 +698,7 @@ class search extends StatelessWidget {
                               return RadioListTile(
                                   title: Text('無'),
                                   value: search.noParkingChecked,
-                                  groupValue: search._parkingChecked,
+                                  groupValue: search.parkingCheckedGroup,
                                   onChanged: (bool? value) {
                                     search.changeParking(value);
                                   }
