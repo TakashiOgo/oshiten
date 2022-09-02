@@ -9,16 +9,16 @@ class ConditionsDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('条件詳細'),
+        title: const Text('条件詳細'),
         actions: [
           IconButton(
-            onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return MyBottomNavigationBar(selectedIndex: 3,);})),
+            onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return const MyBottomNavigationBar(selectedIndex: 3,);})),
             icon: const Icon(Icons.home),
           ),
         ],
       ),
       body: Container(
-        margin: EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         child: Column(
           children: [
             Container(

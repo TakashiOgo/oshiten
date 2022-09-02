@@ -1,8 +1,183 @@
 import 'package:flutter/material.dart';
-import 'sortResults.dart';
+import 'conditionsSortResults.dart';
 import 'package:provider/provider.dart';
-import 'search.dart';
 import 'myBottomNavigationBar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class SortProvider extends ChangeNotifier {
+
+  var selectedPrefectureValue = "北海道";
+  static final prefecturesLists = <String>[
+    "北海道","青森県","秋田県","岩手県","山形県","宮城県","福島県",
+    "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県",
+    "新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県",
+    "三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+    "鳥取県","島根県","岡山県","広島県","山口県",
+    "徳島県","香川県","愛媛県","高知県",
+    "福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"
+  ];
+  var selectedGenreValue = "和食";
+  static final genreLists = <String>[
+    "和食","イタリアン","フレンチ","中華","西洋","アジア・エスニック","創作料理","居酒屋・バー","カフェ",
+    "ラーメン","カレー","焼肉","鍋","パン","スイーツ"
+  ];
+  var selectedMinPriceValue = "下限なし";
+  static final minPriceLists = <String>[
+    "下限なし","¥1,000","¥2,000","¥3,000","¥4,000","¥5,000","¥6,000","¥8,000","¥10,000","¥15,000","¥20,000"
+  ];
+  var selectedMaxPriceValue = "上限なし";
+  static final maxPriceLists = <String>[
+    "上限なし","¥1,000","¥2,000","¥3,000","¥4,000","¥5,000","¥6,000","¥8,000","¥10,000","¥15,000","¥20,000"
+  ];
+
+  bool teenAgeChecked = false;
+  bool twentiesChecked = false;
+  bool thirtiesChecked = false;
+  bool fortiesChecked = false;
+  bool fiftiesChecked = false;
+  bool overSixtiesChecked = false;
+  bool friendChecked = false;
+  bool familyChecked = false;
+  bool companyChecked = false;
+  bool memorialDinnerChecked = false;
+  bool datingChecked = false;
+  bool prettyChecked = false;
+  bool luxuryChecked = false;
+  bool retroChecked = false;
+  bool publicChecked = false;
+  bool parkingChecked = false;
+  bool noParkingChecked = true;
+  bool parkingCheckedGroup = false;
+
+  String parking = "駐車場: 有";
+
+  List<String> ageLists = [];
+  List<String> sceneLists = [];
+  List<String> atmosphereLists = [];
+
+  void sortAgeLists() {
+    ageLists.sort();
+    notifyListeners();
+  }
+
+  void changePrefecture(String? value){
+    selectedPrefectureValue = value!;
+    notifyListeners();
+  }
+
+  void changeGenre(String? value){
+    selectedGenreValue = value!;
+    notifyListeners();
+  }
+
+  void changeMinPrice(String? value){
+    selectedMinPriceValue = value!;
+    notifyListeners();
+  }
+
+  void changeMaxPrice(String? value){
+    selectedMaxPriceValue = value!;
+    notifyListeners();
+  }
+
+  void changeTeenAge(bool? value){
+    teenAgeChecked = value!;
+    ageLists.contains("10代")? ageLists.remove("10代"): ageLists.add("10代");
+    notifyListeners();
+  }
+
+  void changeTwenties(bool? value){
+    twentiesChecked = value!;
+    ageLists.contains("20代")? ageLists.remove("20代"): ageLists.add("20代");
+    notifyListeners();
+  }
+
+  void changeThirties(bool? value){
+    thirtiesChecked = value!;
+    ageLists.contains("30代")? ageLists.remove("30代"): ageLists.add("30代");
+    notifyListeners();
+  }
+
+  void changeForties(bool? value){
+    fortiesChecked = value!;
+    ageLists.contains("40代")? ageLists.remove("40代"): ageLists.add("40代");
+    notifyListeners();
+  }
+
+  void changeFifties(bool? value){
+    fiftiesChecked = value!;
+    ageLists.contains("50代")? ageLists.remove("50代"): ageLists.add("50代");
+    notifyListeners();
+  }
+
+  void changeOverSixties(bool? value){
+    overSixtiesChecked = value!;
+    ageLists.contains("60代")? ageLists.remove("60代"): ageLists.add("60代");
+    notifyListeners();
+  }
+
+  void changeFriend(bool? value){
+    friendChecked = value!;
+    sceneLists.contains("友人")? sceneLists.remove("友人"): sceneLists.add("友人");
+    notifyListeners();
+  }
+
+  void changeFamily(bool? value){
+    familyChecked = value!;
+    sceneLists.contains("家族")? sceneLists.remove("家族"): sceneLists.add("家族");
+    notifyListeners();
+  }
+
+  void changeCompany(bool? value){
+    companyChecked = value!;
+    sceneLists.contains("会社")? sceneLists.remove("会社"): sceneLists.add("会社");
+    notifyListeners();
+  }
+
+  void changeMemorialDinner(bool? value){
+    memorialDinnerChecked = value!;
+    sceneLists.contains("会食")? sceneLists.remove("会食"): sceneLists.add("会食");
+    notifyListeners();
+  }
+
+  void changeDating(bool? value){
+    datingChecked = value!;
+    sceneLists.contains("デート")? sceneLists.remove("デート"): sceneLists.add("デート");
+    notifyListeners();
+  }
+
+  void changePretty(bool? value){
+    prettyChecked = value!;
+    atmosphereLists.contains("キレイめ")? atmosphereLists.remove("キレイめ"): atmosphereLists.add("キレイめ");
+    notifyListeners();
+  }
+
+  void changeLuxury(bool? value){
+    luxuryChecked = value!;
+    atmosphereLists.contains("高級")? atmosphereLists.remove("高級"): atmosphereLists.add("高級");
+    notifyListeners();
+  }
+
+  void changeRetro(bool? value){
+    retroChecked = value!;
+    atmosphereLists.contains("レトロ")? atmosphereLists.remove("レトロ"): atmosphereLists.add("レトロ");
+    notifyListeners();
+  }
+
+  void changePublic(bool? value){
+    publicChecked = value!;
+    atmosphereLists.contains("大衆")? atmosphereLists.remove("大衆"): atmosphereLists.add("大衆");
+    notifyListeners();
+  }
+
+  void changeParking(bool? value) {
+    parkingCheckedGroup = value!;
+    parking = "駐車場: 無";
+    notifyListeners();
+  }
+
+}
 
 
 class ConditionsSort extends StatelessWidget {
@@ -34,14 +209,14 @@ class ConditionsSort extends StatelessWidget {
                           child: Text('エリア'),
                         ),
                         Container(
-                            child: Consumer<SearchProvider>(
-                              builder: (context, search, child) {
+                            child: Consumer<SortProvider>(
+                              builder: (context, sort, child) {
                                 return DropdownButton<String>(
-                                  value: search.selectedPrefectureValue,
-                                  items: SearchProvider.prefecturesLists.map((String list)=>
+                                  value: sort.selectedPrefectureValue,
+                                  items: SortProvider.prefecturesLists.map((String list)=>
                                       DropdownMenuItem(value: list,child: Text(list))).toList(),
                                   onChanged: (String? value){
-                                    search.changePrefecture(value);
+                                    sort.changePrefecture(value);
                                   },
                                 );
                               },
@@ -58,14 +233,14 @@ class ConditionsSort extends StatelessWidget {
                             child: Text('ジャンル'),
                           ),
                           Container(
-                              child: Consumer<SearchProvider>(
-                                builder: (context, search, child) {
+                              child: Consumer<SortProvider>(
+                                builder: (context, sort, child) {
                                   return DropdownButton<String>(
-                                    value: search.selectedGenreValue,
-                                    items: SearchProvider.genreLists.map((String list)=>
+                                    value: sort.selectedGenreValue,
+                                    items: SortProvider.genreLists.map((String list)=>
                                         DropdownMenuItem(value: list,child: Text(list))).toList(),
                                     onChanged: (String? value){
-                                      search.changeGenre(value);
+                                      sort.changeGenre(value);
                                     },
                                   );
                                 },
@@ -92,14 +267,14 @@ class ConditionsSort extends StatelessWidget {
                                 children: [
                                   Container(
                                       alignment: Alignment.center,
-                                      child: Consumer<SearchProvider>(
-                                        builder: (context, search, child) {
+                                      child: Consumer<SortProvider>(
+                                        builder: (context, sort, child) {
                                           return DropdownButton<String>(
-                                            value: search.selectedMinPriceValue,
-                                            items: SearchProvider.minPriceLists.map((String list)=>
+                                            value: sort.selectedMinPriceValue,
+                                            items: SortProvider.minPriceLists.map((String list)=>
                                                 DropdownMenuItem(value: list,child: Text(list))).toList(),
                                             onChanged: (String? value){
-                                              search.changeMinPrice(value);
+                                              sort.changeMinPrice(value);
                                             },
                                           );
                                         },
@@ -112,14 +287,14 @@ class ConditionsSort extends StatelessWidget {
                                   ),
                                   Container(
                                       alignment: Alignment.center,
-                                      child: Consumer<SearchProvider>(
-                                        builder: (context, search, child) {
+                                      child: Consumer<SortProvider>(
+                                        builder: (context, sort, child) {
                                           return DropdownButton<String>(
-                                            value: search.selectedMaxPriceValue,
-                                            items: SearchProvider.maxPriceLists.map((String list)=>
+                                            value: sort.selectedMaxPriceValue,
+                                            items: SortProvider.maxPriceLists.map((String list)=>
                                                 DropdownMenuItem(value: list,child: Text(list))).toList(),
                                             onChanged: (String? value){
-                                              search.changeMaxPrice(value);
+                                              sort.changeMaxPrice(value);
                                             },
                                           );
                                         },
@@ -149,13 +324,13 @@ class ConditionsSort extends StatelessWidget {
                             children: [
                               Container(
                                 width: 130,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child) {
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child) {
                                       return CheckboxListTile(
                                           title: Text('10代'),
-                                          value: search.teenAgeChecked,
+                                          value: sort.teenAgeChecked,
                                           onChanged: (bool? value) {
-                                            search.changeTeenAge(value);
+                                            sort.changeTeenAge(value);
                                           }
                                       );
                                     }
@@ -163,13 +338,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 130,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('20代'),
-                                          value: search.twentiesChecked,
+                                          value: sort.twentiesChecked,
                                           onChanged: (bool? value) {
-                                            search.changeTwenties(value);
+                                            sort.changeTwenties(value);
                                           }
                                       );
                                     }
@@ -177,13 +352,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 130,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('30代'),
-                                          value: search.thirtiesChecked,
+                                          value: sort.thirtiesChecked,
                                           onChanged: (bool? value) {
-                                            search.changeThirties(value);
+                                            sort.changeThirties(value);
                                           }
                                       );
                                     }
@@ -191,13 +366,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 130,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('40代'),
-                                          value: search.fortiesChecked,
+                                          value: sort.fortiesChecked,
                                           onChanged: (bool? value) {
-                                            search.changeForties(value);
+                                            sort.changeForties(value);
                                           }
                                       );
                                     }
@@ -205,13 +380,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 130,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('50代以上'),
-                                          value: search.fiftiesChecked,
+                                          value: sort.fiftiesChecked,
                                           onChanged: (bool? value) {
-                                            search.changeFifties(value);
+                                            sort.changeFifties(value);
                                           }
                                       );
                                     }
@@ -219,13 +394,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 160,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('50代以上'),
-                                          value: search.overSixtiesChecked,
+                                          value: sort.overSixtiesChecked,
                                           onChanged: (bool? value) {
-                                            search.changeOverSixties(value);
+                                            sort.changeOverSixties(value);
                                           }
                                       );
                                     }
@@ -255,13 +430,13 @@ class ConditionsSort extends StatelessWidget {
                             children: [
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child) {
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child) {
                                       return CheckboxListTile(
                                           title: Text('友人'),
-                                          value: search.friendChecked,
+                                          value: sort.friendChecked,
                                           onChanged: (bool? value) {
-                                            search.changeFriend(value);
+                                            sort.changeFriend(value);
                                           }
                                       );
                                     }
@@ -269,13 +444,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('家族'),
-                                          value: search.familyChecked,
+                                          value: sort.familyChecked,
                                           onChanged: (bool? value) {
-                                            search.changeFamily(value);
+                                            sort.changeFamily(value);
                                           }
                                       );
                                     }
@@ -283,13 +458,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('会社'),
-                                          value: search.companyChecked,
+                                          value: sort.companyChecked,
                                           onChanged: (bool? value) {
-                                            search.changeCompany(value);
+                                            sort.changeCompany(value);
                                           }
                                       );
                                     }
@@ -297,13 +472,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('会食'),
-                                          value: search.memorialDinnerChecked,
+                                          value: sort.memorialDinnerChecked,
                                           onChanged: (bool? value) {
-                                            search.changeMemorialDinner(value);
+                                            sort.changeMemorialDinner(value);
                                           }
                                       );
                                     }
@@ -311,13 +486,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 140,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('デート'),
-                                          value: search.datingChecked,
+                                          value: sort.datingChecked,
                                           onChanged: (bool? value) {
-                                            search.changeDating(value);
+                                            sort.changeDating(value);
                                           }
                                       );
                                     }
@@ -347,13 +522,13 @@ class ConditionsSort extends StatelessWidget {
                             children: [
                               Container(
                                 width: 160,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child) {
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child) {
                                       return CheckboxListTile(
                                           title: Text('キレイめ'),
-                                          value: search.prettyChecked,
+                                          value: sort.prettyChecked,
                                           onChanged: (bool? value) {
-                                            search.changePretty(value);
+                                            sort.changePretty(value);
                                           }
                                       );
                                     }
@@ -361,13 +536,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('高級'),
-                                          value: search.luxuryChecked,
+                                          value: sort.luxuryChecked,
                                           onChanged: (bool? value) {
-                                            search.changeLuxury(value);
+                                            sort.changeLuxury(value);
                                           }
                                       );
                                     }
@@ -375,13 +550,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 140,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('レトロ'),
-                                          value: search.retroChecked,
+                                          value: sort.retroChecked,
                                           onChanged: (bool? value) {
-                                            search.changeRetro(value);
+                                            sort.changeRetro(value);
                                           }
                                       );
                                     }
@@ -389,13 +564,13 @@ class ConditionsSort extends StatelessWidget {
                               ),
                               Container(
                                 width: 120,
-                                child: Consumer<SearchProvider>(
-                                    builder: (context, search, child){
+                                child: Consumer<SortProvider>(
+                                    builder: (context, sort, child){
                                       return CheckboxListTile(
                                           title: Text('大衆'),
-                                          value: search.publicChecked,
+                                          value: sort.publicChecked,
                                           onChanged: (bool? value) {
-                                            search.changePublic(value);
+                                            sort.changePublic(value);
                                           }
                                       );
                                     }
@@ -424,14 +599,14 @@ class ConditionsSort extends StatelessWidget {
                           children: [
                             Container(
                               width: 150,
-                              child: Consumer<SearchProvider>(
-                                  builder: (context, search, child){
+                              child: Consumer<SortProvider>(
+                                  builder: (context, sort, child){
                                     return RadioListTile(
                                         title: Text('有'),
-                                        value: search.parkingChecked,
-                                        groupValue: search.parkingCheckedGroup,
+                                        value: sort.parkingChecked,
+                                        groupValue: sort.parkingCheckedGroup,
                                         onChanged: (bool? value) {
-                                          search.changeParking(value);
+                                          sort.changeParking(value);
                                         }
                                     );
                                   }
@@ -439,14 +614,14 @@ class ConditionsSort extends StatelessWidget {
                             ),
                             Container(
                               width: 150,
-                              child: Consumer<SearchProvider>(
-                                  builder: (context, search, child){
+                              child: Consumer<SortProvider>(
+                                  builder: (context, sort, child){
                                     return RadioListTile(
                                         title: Text('無'),
-                                        value: search.noParkingChecked,
-                                        groupValue: search.parkingCheckedGroup,
+                                        value: sort.noParkingChecked,
+                                        groupValue: sort.parkingCheckedGroup,
                                         onChanged: (bool? value) {
-                                          search.changeParking(value);
+                                          sort.changeParking(value);
                                         }
                                     );
                                   }
@@ -460,7 +635,7 @@ class ConditionsSort extends StatelessWidget {
                   SizedBox(height: 20,),
                   Container(
                     child: ElevatedButton(
-                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return SortResults();})),
+                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return ConditionsSortResults();})),
                         child: const Text('絞り込み',style: TextStyle(fontSize: 20),)
                     ),
                   ),

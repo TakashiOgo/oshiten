@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'conditionsDetail.dart';
+import 'myBottomNavigationBar.dart';
+import 'conditionsSort.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'oshimatiChoice.dart';
+
+class ConditionsSortResults extends StatelessWidget {
+  const ConditionsSortResults({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('絞り込み結果'),
+        actions: [
+          IconButton(
+            onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return MyBottomNavigationBar(selectedIndex: 3,);})),
+            icon: const Icon(Icons.home),
+          ),
+        ],
+      ),
+      body: Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Consumer<SortProvider>(
+                builder: (context, sort, child) {
+                  return StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('conditions').snapshots(),
+                      builder: (context, snapshot){
+                        if(snapshot.hasData){
+                          List<DocumentSnapshot> conditionsData = snapshot.data!.docs;
+                          return Expanded(
+                            child: ListView.builder(
+                                itemCount: conditionsData.length,
+                                itemBuilder: (context, index){
+                                  Map<String, dynamic> conditionData = conditionsData[index].data() as Map<String, dynamic>;
+                                  return Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(10),
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.all(30),
+                                        primary: Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        side: BorderSide(),
+                                      ),
+                                      onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return OshimatiChoice();})),
+                                      child: Text(
+                                        '${conditionData['prefecture']}, '
+                                            '${conditionData['genre']},　'
+                                            '${conditionData['minPrice']}〜${conditionData['maxPrice']},　'
+                                            '${conditionData['age']},　'
+                                            '${conditionData['scene']},　'
+                                            '${conditionData['atmosphere']}',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  );
+                                }
+                            ),
+                          );
+                        }
+                        return const Center(child: CircularProgressIndicator(),);
+                      }
+                  );
+                }
+             ),
+            ]
+          ),
+        ),
+    );
+  }
+}

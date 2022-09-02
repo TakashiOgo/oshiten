@@ -52,48 +52,44 @@ class Oshimati extends StatelessWidget {
                       builder: (context, snapshot){
                         if(snapshot.hasData){
                           List<DocumentSnapshot> conditionsData = snapshot.data!.docs;
-                          if(conditionsData[8] == search.uid){
                             return Expanded(
                              child: ListView.builder(
                                   itemCount: conditionsData.length,
                                   itemBuilder: (context, index){
                                     Map<String, dynamic> conditionData = conditionsData[index].data() as Map<String, dynamic>;
-                                    return Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(10),
-                                      child: OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          padding: EdgeInsets.all(30),
-                                          primary: Colors.black,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                      return Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(10),
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: EdgeInsets.all(30),
+                                            primary: Colors.black,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            side: BorderSide(),
                                           ),
-                                          side: BorderSide(),
+                                          onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return OshimatiChoice();})),
+                                          child: Text(
+                                            '${conditionData['prefecture']}, '
+                                                '${conditionData['genre']},　'
+                                                '${conditionData['minPrice']}〜${conditionData['maxPrice']},　'
+                                                '${conditionData['age']},　'
+                                                '${conditionData['scene']},　'
+                                                '${conditionData['atmosphere']}',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
                                         ),
-                                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return OshimatiChoice();})),
-                                        child: Text(
-                                          '${conditionData['prefecture']}, '
-                                              '${conditionData['genre']},　'
-                                              '${conditionData['minPrice']}〜${conditionData['maxPrice']},　'
-                                              '${conditionData['age']},　'
-                                              '${conditionData['scene']},　'
-                                              '${conditionData['atmosphere']}',
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    );
-                                  }
+                                      );
+                                    }
                               ),
                             );
                           }
-                          return Text('まだ登録されていません');
-                        }
                         return const Center(child: CircularProgressIndicator(),);
                       }
                   );
                 }
               ),
-              Container(height: 10,),
             ],
           ),
         ),

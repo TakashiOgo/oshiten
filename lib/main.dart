@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oshiten_app/conditionsSort.dart';
 import 'package:oshiten_app/firebase_options.dart';
 import 'searchDetail.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'myBottomNavigationBar.dart';
 import 'home.dart';
+import 'conditionsSort.dart';
 
 
 void main() async {
@@ -21,6 +23,7 @@ void main() async {
     MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => SearchProvider()),
+          ChangeNotifierProvider(create: (_) => SortProvider()),
           ChangeNotifierProvider(create: (_) => BestOshiten()),
           ChangeNotifierProvider(create: (_) => currentPicIndex()),
         ],
@@ -82,10 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        automaticallyImplyLeading: false,
-      ),
       body: _isSignedIn?MyBottomNavigationBar(selectedIndex: 3):Home(),
     );
   }
