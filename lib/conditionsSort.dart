@@ -50,11 +50,23 @@ class SortProvider extends ChangeNotifier {
   bool noParkingChecked = true;
   bool parkingCheckedGroup = false;
 
-  String parking = "駐車場: 有";
+  String parking = "駐車場 : 有";
 
   List<String> ageLists = [];
   List<String> sceneLists = [];
   List<String> atmosphereLists = [];
+  String teenAgeValue = "";
+  String twentiesValue = "";
+  String thirtiesValue = "";
+  String fortiesValue = "";
+  String fiftiesValue = "";
+  String overSixtiesValue = "";
+  String prettyValue = "";
+  String luxuryValue = "";
+  String retroValue = "";
+  String publicValue = "";
+
+  String myId = FirebaseAuth.instance.currentUser!.uid;
 
   void sortAgeLists() {
     ageLists.sort();
@@ -84,36 +96,42 @@ class SortProvider extends ChangeNotifier {
   void changeTeenAge(bool? value){
     teenAgeChecked = value!;
     ageLists.contains("10代")? ageLists.remove("10代"): ageLists.add("10代");
+    teenAgeValue == ""?teenAgeValue = "10代": teenAgeValue = "";
     notifyListeners();
   }
 
   void changeTwenties(bool? value){
     twentiesChecked = value!;
     ageLists.contains("20代")? ageLists.remove("20代"): ageLists.add("20代");
+    twentiesValue == ""?twentiesValue = "20代": twentiesValue = "";
     notifyListeners();
   }
 
   void changeThirties(bool? value){
     thirtiesChecked = value!;
     ageLists.contains("30代")? ageLists.remove("30代"): ageLists.add("30代");
+    thirtiesValue == ""?thirtiesValue = "30代": thirtiesValue = "";
     notifyListeners();
   }
 
   void changeForties(bool? value){
     fortiesChecked = value!;
     ageLists.contains("40代")? ageLists.remove("40代"): ageLists.add("40代");
+    fortiesValue == ""?fortiesValue = "40代": fortiesValue = "";
     notifyListeners();
   }
 
   void changeFifties(bool? value){
     fiftiesChecked = value!;
     ageLists.contains("50代")? ageLists.remove("50代"): ageLists.add("50代");
+    fiftiesValue == ""?fiftiesValue = "50代": fiftiesValue = "";
     notifyListeners();
   }
 
   void changeOverSixties(bool? value){
     overSixtiesChecked = value!;
     ageLists.contains("60代")? ageLists.remove("60代"): ageLists.add("60代");
+    overSixtiesValue == ""?overSixtiesValue = "60代以上": overSixtiesValue = "";
     notifyListeners();
   }
 
@@ -150,30 +168,34 @@ class SortProvider extends ChangeNotifier {
   void changePretty(bool? value){
     prettyChecked = value!;
     atmosphereLists.contains("キレイめ")? atmosphereLists.remove("キレイめ"): atmosphereLists.add("キレイめ");
+    prettyValue == ""?prettyValue = "キレイめ": prettyValue = "";
     notifyListeners();
   }
 
   void changeLuxury(bool? value){
     luxuryChecked = value!;
     atmosphereLists.contains("高級")? atmosphereLists.remove("高級"): atmosphereLists.add("高級");
+    luxuryValue == ""?luxuryValue = "高級": luxuryValue = "";
     notifyListeners();
   }
 
   void changeRetro(bool? value){
     retroChecked = value!;
     atmosphereLists.contains("レトロ")? atmosphereLists.remove("レトロ"): atmosphereLists.add("レトロ");
+    retroValue == ""?retroValue = "レトロ": retroValue = "";
     notifyListeners();
   }
 
   void changePublic(bool? value){
     publicChecked = value!;
     atmosphereLists.contains("大衆")? atmosphereLists.remove("大衆"): atmosphereLists.add("大衆");
+    publicValue == ""?publicValue = "大衆": publicValue = "";
     notifyListeners();
   }
 
   void changeParking(bool? value) {
     parkingCheckedGroup = value!;
-    parking = "駐車場: 無";
+    parking == "駐車場 : 有"?parking = "駐車場 : 無":parking = "駐車場 : 有";
     notifyListeners();
   }
 
@@ -182,6 +204,8 @@ class SortProvider extends ChangeNotifier {
 
 class ConditionsSort extends StatelessWidget {
   ConditionsSort({Key? key}) : super(key: key);
+
+  // bool _isDisabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +225,7 @@ class ConditionsSort extends StatelessWidget {
             alignment: Alignment.center,
             child: Column(
                 children: [
+                  SizedBox(height: 50,),
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -225,6 +250,7 @@ class ConditionsSort extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(height: 30,),
                   Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -249,394 +275,23 @@ class ConditionsSort extends StatelessWidget {
                         ],
                       )
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 50,),
                   Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text('価格'),
-                        ),
-                        Container(
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Container(
-                                      alignment: Alignment.center,
-                                      child: Consumer<SortProvider>(
-                                        builder: (context, sort, child) {
-                                          return DropdownButton<String>(
-                                            value: sort.selectedMinPriceValue,
-                                            items: SortProvider.minPriceLists.map((String list)=>
-                                                DropdownMenuItem(value: list,child: Text(list))).toList(),
-                                            onChanged: (String? value){
-                                              sort.changeMinPrice(value);
-                                            },
-                                          );
-                                        },
-                                      )
-                                  ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width/10,
-                                    alignment: Alignment.center,
-                                    child: Text('~'),
-                                  ),
-                                  Container(
-                                      alignment: Alignment.center,
-                                      child: Consumer<SortProvider>(
-                                        builder: (context, sort, child) {
-                                          return DropdownButton<String>(
-                                            value: sort.selectedMaxPriceValue,
-                                            items: SortProvider.maxPriceLists.map((String list)=>
-                                                DropdownMenuItem(value: list,child: Text(list))).toList(),
-                                            onChanged: (String? value){
-                                              sort.changeMaxPrice(value);
-                                            },
-                                          );
-                                        },
-                                      )
-                                  )
-                                ]
-                            )
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text('年齢'),
-                        ),
-                        Container(
-                          child: Wrap(
-                            children: [
-                              Container(
-                                width: 130,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child) {
-                                      return CheckboxListTile(
-                                          title: Text('10代'),
-                                          value: sort.teenAgeChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeTeenAge(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 130,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('20代'),
-                                          value: sort.twentiesChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeTwenties(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 130,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('30代'),
-                                          value: sort.thirtiesChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeThirties(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 130,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('40代'),
-                                          value: sort.fortiesChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeForties(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 130,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('50代以上'),
-                                          value: sort.fiftiesChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeFifties(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 160,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('50代以上'),
-                                          value: sort.overSixtiesChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeOverSixties(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text('シーン'),
-                        ),
-                        Container(
-                          child: Wrap(
-                            children: [
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child) {
-                                      return CheckboxListTile(
-                                          title: Text('友人'),
-                                          value: sort.friendChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeFriend(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('家族'),
-                                          value: sort.familyChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeFamily(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('会社'),
-                                          value: sort.companyChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeCompany(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('会食'),
-                                          value: sort.memorialDinnerChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeMemorialDinner(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 140,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('デート'),
-                                          value: sort.datingChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeDating(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text('雰囲気'),
-                        ),
-                        Container(
-                          child: Wrap(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child) {
-                                      return CheckboxListTile(
-                                          title: Text('キレイめ'),
-                                          value: sort.prettyChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changePretty(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('高級'),
-                                          value: sort.luxuryChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeLuxury(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 140,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('レトロ'),
-                                          value: sort.retroChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changeRetro(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                              Container(
-                                width: 120,
-                                child: Consumer<SortProvider>(
-                                    builder: (context, sort, child){
-                                      return CheckboxListTile(
-                                          title: Text('大衆'),
-                                          value: sort.publicChecked,
-                                          onChanged: (bool? value) {
-                                            sort.changePublic(value);
-                                          }
-                                      );
-                                    }
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text('駐車場'),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              width: 150,
-                              child: Consumer<SortProvider>(
-                                  builder: (context, sort, child){
-                                    return RadioListTile(
-                                        title: Text('有'),
-                                        value: sort.parkingChecked,
-                                        groupValue: sort.parkingCheckedGroup,
-                                        onChanged: (bool? value) {
-                                          sort.changeParking(value);
-                                        }
-                                    );
-                                  }
-                              ),
-                            ),
-                            Container(
-                              width: 150,
-                              child: Consumer<SortProvider>(
-                                  builder: (context, sort, child){
-                                    return RadioListTile(
-                                        title: Text('無'),
-                                        value: sort.noParkingChecked,
-                                        groupValue: sort.parkingCheckedGroup,
-                                        onChanged: (bool? value) {
-                                          sort.changeParking(value);
-                                        }
-                                    );
-                                  }
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                  Container(
-                    child: ElevatedButton(
-                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return ConditionsSortResults();})),
-                        child: const Text('絞り込み',style: TextStyle(fontSize: 20),)
+                    child: Consumer<SortProvider>(
+                      builder: (context, sort, child) {
+                        // sort.ageLists.isNotEmpty
+                        //     && sort.sceneLists.isNotEmpty && sort.atmosphereLists.isNotEmpty
+                        //     ? _isDisabled = true: _isDisabled = false;
+                        return ElevatedButton(
+                            onPressed: () =>
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) {
+                                      return ConditionsSortResults();
+                                    })),
+                            child: const Text(
+                              '絞り込み', style: TextStyle(fontSize: 20),)
+                        );
+                      },
                     ),
                   ),
                 ]

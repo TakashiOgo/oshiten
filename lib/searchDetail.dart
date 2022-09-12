@@ -3,8 +3,10 @@ import 'myBottomNavigationBar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
 import 'search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class currentPicIndex extends ChangeNotifier{
+class StorePic extends ChangeNotifier{
 
   int picIndex = 0;
 
@@ -23,7 +25,35 @@ List<Widget> storePic = [
 ];
 
 class SearchDetail extends StatelessWidget {
-  const SearchDetail({Key? key}) : super(key: key);
+  SearchDetail({Key? key,
+    required this.prefecture,
+    required this.genre,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.age,
+    required this.scene,
+    required this.atmosphere,
+    required this.parking,
+    required this.imgUrl,
+    required this.storeName,
+    required this.introduction,
+    required this.profileImg,
+    required this.userName,
+  }) : super(key: key);
+
+  String prefecture = "";
+  String genre = "";
+  String minPrice = "";
+  String maxPrice = "";
+  List<dynamic> age = [];
+  String scene = "";
+  String atmosphere = "";
+  String parking = "";
+  String imgUrl = "";
+  String storeName = "";
+  String introduction = "";
+  String profileImg = "";
+  String userName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -43,53 +73,18 @@ class SearchDetail extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  child: Consumer<currentPicIndex>(
-                    builder: (context, pic, child) {
-                      return CarouselSlider(
-                        options: CarouselOptions(
-                          height: MediaQuery.of(context).size.height <
-                              MediaQuery.of(context).size.width?400:200,
-                          enableInfiniteScroll: false,
-                          enlargeCenterPage: true,
-                          onPageChanged: (index, reason) {
-                            pic.changePicIndex(index);
-                          },
-                        ),
-                        items: storePic,
-                      );
-                    },
-                  ),
-                ),
-                Consumer<currentPicIndex>(
-                  builder: (context, pic, child){
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: storePic.map((url) {
-                        int index = storePic.indexOf(url);
-                        return Container(
-                          width: 10.0,
-                          height: 10.0,
-                          margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: pic.picIndex == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                ),
-                SizedBox(height: 20,),
-                Container(
                   padding: EdgeInsets.all(15),
-                  child: Text('店名'),
+                  child: Image(image: NetworkImage(imgUrl)),
                 ),
                 SizedBox(height: 10,),
                 Container(
                   padding: EdgeInsets.all(15),
-                  child: Text('コメント　　コメント　　コメント'),
+                  child: Text('${storeName}',style: TextStyle(fontSize: 20),),
+                ),
+                SizedBox(height: 10,),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: Text('${introduction}',style: TextStyle(fontSize: 18),),
                 ),
                 SizedBox(height: 15,),
                 Container(
@@ -101,13 +96,19 @@ class SearchDetail extends StatelessWidget {
                   child: Consumer<SearchProvider>(
                       builder: (context, search, child) {
                         return Text(
-                          '${search.selectedPrefectureValue}　'
-                              '${search.selectedGenreValue}　'
-                              '${search.selectedMinPriceValue}〜${search.selectedMaxPriceValue}　'
-                              '${search.ageLists}　${search.sceneLists}　'
-                              '${search.atmosphereLists}　'
-                              '${search.parking}',
-                          style: TextStyle(fontSize: 20),);
+                          '${prefecture}  '+
+                              '${genre}　 '+
+                              '${minPrice}〜${maxPrice}　'+
+                              '${age}'.substring(1,'${age}'.length-1)+
+                              '    '+
+                              '${scene}'
+                              // .substring(1,'${scene}'.length-1)+
+                                  '    '+
+                              '${atmosphere}'
+                              // .substring(1,'${atmosphere}'.length-1)+
+                                  '    '+
+                              '${parking}',
+                          style: TextStyle(fontSize: 20,),);
                       }
                   ),
                 ),
@@ -117,7 +118,7 @@ class SearchDetail extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: MediaQuery.of(context).size.height < MediaQuery.of(context).size.width?100:50,
-                        backgroundImage: AssetImage('images/profilePic/pic1.png'),
+                        backgroundImage: NetworkImage('${profileImg}'),
                       ),
                       SizedBox(width: 20,),
                       Expanded(
@@ -125,11 +126,11 @@ class SearchDetail extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(child: Text('ユーザーネーム',style: TextStyle(fontSize: 20),),),
+                            Container(child: Text('${userName}',style: TextStyle(fontSize: 20),),),
                             SizedBox(height: 10,),
-                            Container(
-                              child: Text('このお店は最高です！ぜひ行ってみてください！！',style: TextStyle(fontSize: 15),),
-                            ),
+                            // Container(
+                            //   child: Text('このお店は最高です！ぜひ行ってみてください！！',style: TextStyle(fontSize: 15),),
+                            // ),
                           ],
                         ),
                       ),

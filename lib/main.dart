@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:oshiten_app/conditionsSort.dart';
-import 'package:oshiten_app/firebase_options.dart';
+import 'conditionsSort.dart';
+import 'firebase_options.dart';
+import 'myPageEdit.dart';
 import 'searchDetail.dart';
 import 'package:provider/provider.dart';
-import 'logIn.dart';
-import 'userRegister.dart';
 import 'search.dart';
 import 'oshimatiDetail.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'myBottomNavigationBar.dart';
 import 'home.dart';
-import 'conditionsSort.dart';
 
 
 void main() async {
@@ -24,8 +22,9 @@ void main() async {
         providers: [
           ChangeNotifierProvider(create: (_) => SearchProvider()),
           ChangeNotifierProvider(create: (_) => SortProvider()),
-          ChangeNotifierProvider(create: (_) => BestOshiten()),
-          ChangeNotifierProvider(create: (_) => currentPicIndex()),
+          ChangeNotifierProvider(create: (_) => GoodOshiten()),
+          ChangeNotifierProvider(create: (_) => StorePic()),
+          ChangeNotifierProvider(create: (_) => PictureProvider()),
         ],
         child: const MyApp(),
     ),
@@ -85,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isSignedIn?MyBottomNavigationBar(selectedIndex: 3):Home(),
+      body: _isSignedIn?const MyBottomNavigationBar(selectedIndex: 3):Home(),
     );
   }
 }

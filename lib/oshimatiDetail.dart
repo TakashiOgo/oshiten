@@ -1,26 +1,66 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'myBottomNavigationBar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'searchDetail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class BestOshiten extends ChangeNotifier{
+class GoodOshiten extends ChangeNotifier{
 
-  bool checkedBestOshiten = false;
+  bool checkedGoodOshiten = false;
+  String myId = FirebaseAuth.instance.currentUser!.uid;
+  int goodOshitenValue = 0;
 
-  void changeBestOshiten() {
-    if(checkedBestOshiten) {
-      checkedBestOshiten = false;
-    } else {
-      checkedBestOshiten = true;
-    }
+
+  void changeGoodOshiten() {
+    checkedGoodOshiten = true;
+    goodOshitenValue = 1;
     notifyListeners();
   }
+
+  final snackBar = const SnackBar(
+    backgroundColor: Colors.blue,
+    content: Text('グッドオシテンに認定しました！', style: TextStyle(color: Colors.white, fontSize: 24,),),
+  );
 
 }
 
 class OshimatiDetail extends StatelessWidget {
-  const OshimatiDetail({Key? key}) : super(key: key);
+  OshimatiDetail({Key? key,
+    required this.prefecture,
+    required this.genre,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.age,
+    required this.scene,
+    required this.atmosphere,
+    required this.parking,
+    required this.imgUrl,
+    required this.storeName,
+    required this.introduction,
+    required this.profileImg,
+    required this.userName,
+    required this.userId,
+    required this.data,
+    required this.goodOshiten,
+  }) : super(key: key);
+  String prefecture = "";
+  String genre = "";
+  String minPrice = "";
+  String maxPrice = "";
+  List<dynamic> age = [];
+  String scene = "";
+  String atmosphere = "";
+  String parking = "";
+  String imgUrl = "";
+  String storeName = "";
+  String introduction = "";
+  String profileImg = "";
+  String userName = "";
+  String userId = "";
+  String data = "";
+  int goodOshiten = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,62 +80,40 @@ class OshimatiDetail extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                child: Consumer<currentPicIndex>(
-                  builder: (context, pic, child) {
-                    return CarouselSlider(
-                      options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height <
-                            MediaQuery.of(context).size.width?400:200,
-                        enableInfiniteScroll: false,
-                        enlargeCenterPage: true,
-                        onPageChanged: (index, reason) {
-                          pic.changePicIndex(index);
-                        },
-                      ),
-                      items: storePic,
-                    );
-                  },
-                ),
-              ),
-              Consumer<currentPicIndex>(
-                  builder: (context, pic, child){
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: storePic.map((url) {
-                        int index = storePic.indexOf(url);
-                        return Container(
-                          width: 10.0,
-                          height: 10.0,
-                          margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: pic.picIndex == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-              ),
-              SizedBox(height: 20,),
-              Container(
                 padding: EdgeInsets.all(15),
-                child: Text('店名'),
+                child: Image(image: NetworkImage(imgUrl)),
               ),
               SizedBox(height: 10,),
               Container(
                 padding: EdgeInsets.all(15),
-                child: Text('コメント　　コメント　　コメント'),
+                child: Text('${storeName}',style: TextStyle(fontSize: 20),),
+              ),
+              SizedBox(height: 10,),
+              Container(
+                padding: EdgeInsets.all(15),
+                child: Text('${introduction}',style: TextStyle(fontSize: 18),),
               ),
               SizedBox(height: 15,),
               Container(
                 padding: EdgeInsets.all(20),
-                child: Text('東京都　　　和食　　　1,000〜3,000　　　20代　　　友人　　　大衆　　　駐車場：有',
-                  style: TextStyle(fontSize: 20),),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueGrey),
                   borderRadius: BorderRadius.circular(15),
+                ),
+                child: Text(
+                  '${prefecture}  '+
+                      '${genre}　 '+
+                      '${minPrice}〜${maxPrice}　'+
+                      '${age}'.substring(1,'${age}'.length-1)+
+                      '    '+
+                      '${scene}'
+                      // .substring(1,'${scene}'.length-1)+
+                          '    '+
+                      '${atmosphere}'
+                      // .substring(1,'${atmosphere}'.length-1)+
+                          '    '+
+                      '${parking}',
+                  style: TextStyle(fontSize: 20,),
                 ),
               ),
               SizedBox(height: 50,),
@@ -104,7 +122,7 @@ class OshimatiDetail extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: MediaQuery.of(context).size.height < MediaQuery.of(context).size.width?100:50,
-                      backgroundImage: AssetImage('images/profilePic/pic1.png'),
+                      backgroundImage: NetworkImage('${profileImg}'),
                     ),
                     SizedBox(width: 20,),
                     Expanded(
@@ -112,11 +130,11 @@ class OshimatiDetail extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(child: Text('ユーザーネーム',style: TextStyle(fontSize: 20),),),
+                          Container(child: Text('${userName}',style: TextStyle(fontSize: 20),),),
                           SizedBox(height: 10,),
-                          Container(
-                            child: Text('このお店は最高です！ぜひ行ってみてください！！',style: TextStyle(fontSize: 15),),
-                          ),
+                          // Container(
+                          //   child: Text('このお店は最高です！ぜひ行ってみてください！！',style: TextStyle(fontSize: 15),),
+                          // ),
                         ],
                       ),
                     ),
@@ -124,24 +142,49 @@ class OshimatiDetail extends StatelessWidget {
                 ),
               ),
               Container(
-                alignment: Alignment.centerRight,
-                child: Consumer<BestOshiten>(
-                  builder: (context, bestoshiten, child) {
-                    return ElevatedButton(
-                      child: Text('ベストオシテン',style: TextStyle(fontSize: 20),),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(10),
-                        primary: bestoshiten.checkedBestOshiten?Colors.red:Colors.grey,
-                        onPrimary: bestoshiten.checkedBestOshiten?Colors.black:Colors.white,
-                        shape: const StadiumBorder(),
-                      ),
-                      onPressed: () {
-                        bestoshiten.changeBestOshiten();
+                width: MediaQuery.of(context).size.width/2,
+                    alignment: Alignment.centerRight,
+                    child: Consumer<GoodOshiten>(
+                        builder: (context, goodoshiten, child) {
+                          return StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance.collection('store')
+                              .where('imgUrl',isEqualTo: imgUrl).snapshots(),
+                              builder: (context, snapshot){
+                                if(snapshot.hasData){
+                                  List<DocumentSnapshot> storesData = snapshot.data!.docs;
+                                  return ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.all(10),
+                                        primary: goodoshiten.checkedGoodOshiten?Colors.black:Colors.white,
+                                        onPrimary: goodoshiten.checkedGoodOshiten?Colors.white:Colors.black,
+                                        shape: const StadiumBorder(),
+                                      ),
+                                      onPressed: goodoshiten.checkedGoodOshiten == true?null:() {
+                                        goodoshiten.changeGoodOshiten();
+                                        FirebaseFirestore.instance.collection('profile').doc(userId).update({
+                                          'goodOshiten': FieldValue.increment(1),
+                                        });
+                                        FirebaseFirestore.instance.collection('store').doc(data).update({
+                                          'goodOshiten': FieldValue.increment(1),
+                                        });
+                                        Future.delayed(Duration(seconds: 2),(){});
+                                        ScaffoldMessenger.of(context).showSnackBar(goodoshiten.snackBar);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.thumb_up_alt),
+                                          Text('グッドオシテン',style: TextStyle(fontSize: 20),),
+                                        ],
+                                      )
+                                  );
+                                }else{
+                                  return Container();
+                                }
+                            }
+                          );
                       }
-                    );
-                  }
-                )
-              ),
+                    ),
+                ),
             ],
           ),
         ),

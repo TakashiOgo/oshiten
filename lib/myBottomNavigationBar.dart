@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oshiten_app/home.dart';
 import 'search.dart';
 import 'myPage.dart';
 import 'oshimati.dart';

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:oshiten_app/conditionsDetail.dart';
 import 'conditionsSort.dart';
 import 'main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'search.dart';
-import 'oshimatiChoice.dart';
 
 class ConditionsLineUp extends StatelessWidget {
   const ConditionsLineUp({Key? key}) : super(key: key);
@@ -43,18 +42,18 @@ class ConditionsLineUp extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20,),
-              Consumer<SearchProvider>(
-                  builder: (context, search, child) {
+              Consumer<SortProvider>(
+                  builder: (context, sort, child) {
                     return StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('conditions').snapshots(),
+                        stream: FirebaseFirestore.instance.collectionGroup('eachCondition').snapshots(),
                         builder: (context, snapshot){
                           if(snapshot.hasData){
-                            List<DocumentSnapshot> conditionsData = snapshot.data!.docs;
+                            List<DocumentSnapshot> eachConditionsData = snapshot.data!.docs;
                             return Expanded(
                               child: ListView.builder(
-                                  itemCount: conditionsData.length,
+                                  itemCount: eachConditionsData.length,
                                   itemBuilder: (context, index){
-                                    Map<String, dynamic> conditionData = conditionsData[index].data() as Map<String, dynamic>;
+                                    Map<String, dynamic> eachConditionData = eachConditionsData[index].data() as Map<String, dynamic>;
                                     return Container(
                                       width: double.infinity,
                                       padding: EdgeInsets.all(10),
@@ -67,14 +66,33 @@ class ConditionsLineUp extends StatelessWidget {
                                           ),
                                           side: BorderSide(),
                                         ),
-                                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return OshimatiChoice();})),
+                                        onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                          return ConditionsDetail(
+                                            prefecture: eachConditionData['prefecture'],
+                                            genre: eachConditionData['genre'],
+                                            minPrice: eachConditionData['minPrice'],
+                                            maxPrice: eachConditionData['maxPrice'],
+                                            age: eachConditionData['age'],
+                                            scene: eachConditionData['scene'],
+                                            atmosphere: eachConditionData['atmosphere'],
+                                            parking: eachConditionData['parking'],
+                                            userName: eachConditionData['userName'],
+                                            profileImg: eachConditionData['profileImg'],
+                                          );
+                                        })),
                                         child: Text(
-                                          '${conditionData['prefecture']}, '
-                                              '${conditionData['genre']},　'
-                                              '${conditionData['minPrice']}〜${conditionData['maxPrice']},　'
-                                              '${conditionData['age']},　'
-                                              '${conditionData['scene']},　'
-                                              '${conditionData['atmosphere']}',
+                                          '${eachConditionData['prefecture']}  '+
+                                          '${eachConditionData['genre']}　 '+
+                                          '${eachConditionData['minPrice']}〜${eachConditionData['maxPrice']}　'+
+                                          '${eachConditionData['age']}'.substring(1,'${eachConditionData['age']}'.length-1)+
+                                          '    '+
+                                          '${eachConditionData['scene']}'
+                                              // .substring(1,'${eachConditionData['scene']}'.length-1)+
+                                          '    '+
+                                          '${eachConditionData['atmosphere']}'
+                                              // .substring(1,'${eachConditionData['atmosphere']}'.length-1)+
+                                          '    '+
+                                          '${eachConditionData['parking']}',
                                           style: TextStyle(fontSize: 20),
                                         ),
                                       ),

@@ -3,7 +3,29 @@ import 'storeIntroduction.dart';
 import 'myBottomNavigationBar.dart';
 
 class ConditionsDetail extends StatelessWidget {
-  const ConditionsDetail({Key? key}) : super(key: key);
+  ConditionsDetail({Key? key,
+    required this.prefecture,
+    required this.genre,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.age,
+    required this.scene,
+    required this.atmosphere,
+    required this.parking,
+    required this.userName,
+    required this.profileImg,
+  }) : super(key: key);
+  String prefecture = "";
+  String genre = "";
+  String minPrice = "";
+  String maxPrice = "";
+  List<dynamic> age = [];
+  String scene = "";
+  String atmosphere = "";
+  String parking = "";
+  String userName = "";
+  String profileImg = "";
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +48,12 @@ class ConditionsDetail extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: MediaQuery.of(context).size.height < MediaQuery.of(context).size.width?100:50,
-                    backgroundImage: AssetImage('images/profilePic/pic1.png'),
+                    backgroundImage: NetworkImage('${profileImg}'),
                   ),
                   SizedBox(width: 20,),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text('ユーザーネーム',style: TextStyle(fontSize: 20),),
+                    child: Text('${userName}',style: TextStyle(fontSize: 20),),
                   ),
                 ],
               ),
@@ -39,7 +61,18 @@ class ConditionsDetail extends StatelessWidget {
             SizedBox(height: 30,),
             Container(
               child: Text(
-                '東京都　　　和食　　　1,000〜3,000　　　20代　　　友人　　　大衆　　　駐車場：有',
+                '${prefecture}  '+
+                    '${genre}　 '+
+                    '${minPrice}〜${maxPrice}　'+
+                    '${age}'.substring(1,'${age}'.length-1)+
+                    '    '+
+                    '${scene}'
+                        // .substring(1,'${scene}'.length-1)+
+                    '    '+
+                    '${atmosphere}'
+                        // .substring(1,'${atmosphere}'.length-1)+
+                    '    '+
+                    '${parking}',
                 style: TextStyle(fontSize: 20,),
               ),
               padding: EdgeInsets.all(20),
@@ -54,7 +87,18 @@ class ConditionsDetail extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 padding: EdgeInsets.all(20),
                 child: ElevatedButton(
-                    onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return StoreIntroduction();})),
+                    onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                      return StoreIntroduction(
+                        prefecture: prefecture,
+                        genre: genre,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        age: age,
+                        scene: scene,
+                        atmosphere: atmosphere,
+                        parking: parking,
+                      );
+                    })),
                     child: const Text('お店を紹介する',style: TextStyle(fontSize: 20),)
                 ),
               ),

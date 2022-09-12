@@ -29,7 +29,10 @@ class ConditionsSortResults extends StatelessWidget {
             Consumer<SortProvider>(
                 builder: (context, sort, child) {
                   return StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('conditions').snapshots(),
+                      stream: FirebaseFirestore.instance.collectionGroup('eachCondition')
+                      .where("prefecture",isEqualTo: sort.selectedPrefectureValue)
+                      .where("genre",isEqualTo: sort.selectedGenreValue)
+                      .snapshots(),
                       builder: (context, snapshot){
                         if(snapshot.hasData){
                           List<DocumentSnapshot> conditionsData = snapshot.data!.docs;
@@ -50,14 +53,32 @@ class ConditionsSortResults extends StatelessWidget {
                                         ),
                                         side: BorderSide(),
                                       ),
-                                      onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){return OshimatiChoice();})),
+                                      onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                        return ConditionsDetail(
+                                          prefecture: conditionData['prefecture'],
+                                          genre: conditionData['genre'],
+                                          minPrice: conditionData['minPrice'],
+                                          maxPrice: conditionData['maxPrice'],
+                                          age: conditionData['age'],
+                                          scene: conditionData['scene'],
+                                          atmosphere: conditionData['atmosphere'],
+                                          parking: conditionData['parking'],
+                                          userName: conditionData['userName'],
+                                          profileImg: conditionData['profileImg'],
+                                        );})),
                                       child: Text(
-                                        '${conditionData['prefecture']}, '
-                                            '${conditionData['genre']},　'
-                                            '${conditionData['minPrice']}〜${conditionData['maxPrice']},　'
-                                            '${conditionData['age']},　'
-                                            '${conditionData['scene']},　'
-                                            '${conditionData['atmosphere']}',
+                                        '${conditionData['prefecture']}  '+
+                                        '${conditionData['genre']}　 '+
+                                        '${conditionData['minPrice']}〜${conditionData['maxPrice']}　'+
+                                        '${conditionData['age']}'.substring(1,'${conditionData['age']}'.length-1)+
+                                        '    '+
+                                        '${conditionData['scene']}'
+                                            // .substring(1,'${conditionData['scene']}'.length-1)+
+                                        '    '+
+                                        '${conditionData['atmosphere']}'
+                                            // .substring(1,'${conditionData['atmosphere']}'.length-1)+
+                                        '    '+
+                                        '${conditionData['parking']}',
                                         style: TextStyle(fontSize: 20),
                                       ),
                                     ),
@@ -70,7 +91,8 @@ class ConditionsSortResults extends StatelessWidget {
                       }
                   );
                 }
-             ),
+              ),
+              Container(height: 10,),
             ]
           ),
         ),
